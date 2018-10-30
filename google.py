@@ -24,4 +24,4 @@ class Google:
 ff = webdriver.Firefox()
 g = Google(ff)
 g.navigate()
-g.lucky('Live de python')
+g.lucky('IMD ufrn')
