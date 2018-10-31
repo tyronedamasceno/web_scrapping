@@ -19,5 +19,10 @@ for url in urls:
     job_url = '{}{}'.format(base_url, url)
     job = get(job_url)
     job_page = bs(job.text, 'html.parser')
-    print(job_page.find('h1', {'class':'text-info'}))
+    title = job_page.find('h1', {'class':'text-info'}).text
+    ps = job_page.find_all('p')
+    local = ps[0].text
+    empresa = ps[1].text
+
+    print('{}\n{}\n{}\n'.format(title, local, empresa))
 
