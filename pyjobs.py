@@ -2,27 +2,35 @@ from bs4 import BeautifulSoup as bs
 from requests import get
 
 base_url = 'http://pyjobs.com.br'
-jobs = '{}/?page='.format(base_url)
 
-pyjobs = get(jobs)
-pyjobs_page = bs(pyjobs.text, 'html.parser')
 
-boxes = pyjobs_page.find_all('div', {'class':'card-body'})
+pyjobs = get(base_url)
+home_page = bs(pyjobs.text, 'html.parser')
 
-urls = []
-for box in boxes:
-    x = box.find('a')
-    if x:
-        urls.append(x.get('href'))    
+number_of_pages = len(home_page.find_all('li', {'class':'page-item'}))
 
-for url in urls:
-    job_url = '{}{}'.format(base_url, url)
-    job = get(job_url)
-    job_page = bs(job.text, 'html.parser')
-    title = job_page.find('h1', {'class':'text-info'}).text
-    ps = job_page.find_all('p')
-    local = ps[0].text
-    empresa = ps[1].text
+vagas = []
 
-    print('{}\n{}\n{}\n'.format(title, local, empresa))
+for i in range(number_of_pages):
+    which_page = '{}/?page={}'.format(base_url, (i+1))
+    pyjobs = get(which_page)
+    jobs_page = bs(pyjobs.text, 'html.parser')
+
+    boxes = jobs_page.find_all('div', {'class':'card-body'})
+    
+    urls = [box.find('a').get('href') for box in boxes if box.find('a')]
+    
+    for url in urls:
+        job_url = '{}{}'.format(base_url, url)
+        job = get(job_url)
+        job_page = bs(job.text, 'html.parser')
+        title = job_page.find('h1', {'class':'text-info'}).text
+        ps = job_page.find_all('p')
+        local = ps[0].text
+        empresa = ps[1].text
+        #print('\n{}\n{}\n{}'.format(title, local, empresa))
+        vagas.append('\n{}\n{}\n{}'.format(title, local, empresa))
+
+print(set(vagas))
+
 
